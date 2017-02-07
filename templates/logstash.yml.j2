@@ -86,7 +86,7 @@ path.config: {{ logstash_config_dir }}/conf.d
 # Show fully compiled configuration as debug log message
 # NOTE: --log.level must be 'debug'
 #
-config.debug: true
+config.debug: {{ logstash_enabled_debug }}
 #
 # ------------ Queuing Settings --------------
 #

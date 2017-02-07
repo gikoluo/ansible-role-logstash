@@ -16,12 +16,15 @@ logstash_ssl_certificate_file: ""
 logstash_ssl_key_file: ""
 
 logstash_enabled_on_boot: yes
+logstash_enabled_debug: no
 
 logstash_install_dir: /opt/logstash
 
 logstash_install_plugins:
   - logstash-input-beats
 
+logstash_user: logstash
+logstash_group: logstash
 
 logstash_download_base_url: https://artifacts.elastic.co/downloads/logstash
 logstash_download_path: "files/elk"

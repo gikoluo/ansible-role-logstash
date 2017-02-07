@@ -1,13 +1,21 @@
 ---
 
+- name: Include optional user and group creation.
+  include: logstash-optional-user.yml
+  become: yes
+  become_user: root
 
 - name: "Create Logstash Data dir "
   file:
-    path: "{{ logstash_data_dir }}"
+    path: "{{ item }}"
     state: "directory"
-    owner: "logstash"
-    group: "logstash"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
     mode: "0755"
+  with_items:
+    - "{{ logstash_logs_dir }}"
+    - "{{ logstash_data_dir }}"
+  become: yes
   
 - name: "Create Logstash config dir "
   file:
@@ -18,6 +26,7 @@
     - "{{ logstash_config_dir }}"
     - "{{ logstash_config_dir }}/conf.d"
   become: yes
+
 
 - name: "Copy tar gz"
   become: yes
@@ -40,10 +49,19 @@
     creates: "{{ logstash_install_dir }}"
     removes: "/tmp/{{ logstash_tarball }}"
 
+
+
+
+- name    : get files in config
+  shell   : ls -1 "{{ logstash_install_dir }}/config/"
+  register: config_files
+
 - name: Copy configration
-  copy: remote_src=True src={{ item }} dest={{ logstash_config_dir }}/ owner=root mode=644
-  with_fileglob:
-    - "{{ logstash_install_dir }}/config/*"
+  copy:
+    remote_src: True
+    src : "{{ logstash_install_dir }}/config/{{item}}"
+    dest: "{{ logstash_config_dir }}/"
+  with_items: "{{ config_files.stdout_lines }}"
   become: yes
 
 - name: Remove old files foo
