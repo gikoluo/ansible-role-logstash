@@ -48,13 +48,12 @@
   args:
     creates: "{{ logstash_install_dir }}"
     removes: "/tmp/{{ logstash_tarball }}"
-
-
-
+  register: install_rs
 
 - name    : get files in config
   shell   : ls -1 "{{ logstash_install_dir }}/config/"
   register: config_files
+  when: install_rs|changed
 
 - name: Copy configration
   copy:
@@ -62,6 +61,7 @@
     src : "{{ logstash_install_dir }}/config/{{item}}"
     dest: "{{ logstash_config_dir }}/"
   with_items: "{{ config_files.stdout_lines }}"
+  when: install_rs|changed
   become: yes
 
 - name: Remove old files foo
