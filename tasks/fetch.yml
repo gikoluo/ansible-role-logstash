@@ -1,0 +1,17 @@
+#
+# fetch .tar.gz files
+#
+- stat:
+    path: "{{ logstash_download_path }}/{{ logstash_tarball }}.tar.gz"
+  register: st
+
+- debug: msg="Download {{ logstash_tarball_url }} to {{ logstash_download_path }}/{{ logstash_tarball }}.tar.gz"
+
+- name: get Logstash tarball (as tar.gz file)
+  get_url:
+    url:     "{{ logstash_tarball_url }}"
+    dest:    "{{ logstash_download_path }}/{{ logstash_tarball }}.tar.gz"
+    mode:    0644
+  when: logstash_download_from_remote and not st.stat.exists
+
+
