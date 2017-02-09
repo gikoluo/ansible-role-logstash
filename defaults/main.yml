@@ -5,17 +5,21 @@ logstash_listen_port_beats: 5044
 logstash_elasticsearch_hosts:
   - http://localhost:9200
 
+logstash_beat_input_enable: true
+
 logstash_redis_input_enable: false
 logstash_redis_input_hosts:
   - host: 127.0.0.1
     data_type: "list"
     key: "filebeat"
 
+logstash_local_syslog_input_enable: false
+
 logstash_local_syslog_path: /var/log/syslog
 logstash_logs_dir: /var/log/logstash
 logstash_data_dir: /data/logstash
 logstash_config_dir: /etc/logstash
-logstash_monitor_local_syslog: true
+
 
 logstash_ssl_dir: /etc/pki/logstash
 logstash_ssl_certificate_file: ""

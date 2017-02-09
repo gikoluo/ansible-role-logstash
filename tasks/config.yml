@@ -1,52 +1,79 @@
 ---
 
 
-- name: Create Logstash configuration files.
+- name: Beat input configuration
   template:
-    src: "{{ item }}.j2"
-    dest: "{{ logstash_config_dir }}/conf.d/{{ item }}"
+    src: "inputs/01-beats-input.conf.j2"
+    dest: "{{ logstash_config_dir }}/conf.d/01-beats-input.conf"
     owner: root
     group: root
     mode: 0644
-  with_items:
-    - 01-beats-input.conf
-    - 30-elasticsearch-output.conf
+  when: logstash_beat_input_enable
   notify: restart logstash
 
-- name: Create Logstash filters.
-  copy:
-    src: "{{ item }}"
-    dest: "/etc/logstash/conf.d/{{ item|basename }}"
+- name: Beat input configuration absent if disabled.
+  file:
+    path: "{{ logstash_config_dir }}/conf.d/01-beats-input.conf"
+    state: absent
+  when: not logstash_beat_input_enable
+  notify: restart logstash
+
+- name: Local syslog configuration
+  template:
+    src: "inputs/02-local-syslog-input.conf.j2"
+    dest: "{{ logstash_config_dir }}/conf.d/02-local-syslog-input.conf"
     owner: root
     group: root
     mode: 0644
-  with_fileglob:
-    - files/filters/*.conf
+  when: logstash_local_syslog_input_enable
   notify: restart logstash
 
-- name: Create Logstash configuration file for Redis.
+- name: Local syslog configuration absent if disabled.
+  file:
+    path: "{{ logstash_config_dir }}/conf.d/02-local-syslog-input.conf"
+    state: absent
+  when: not logstash_local_syslog_input_enable
+  notify: restart logstash
+
+- name: Redis input configuration
   template:
-    src: 03-redis-input.conf.j2
-    dest: /etc/logstash/conf.d/03-redis-input.conf
+    src: "inputs/03-redis-input.conf.j2"
+    dest: "{{ logstash_config_dir }}/conf.d/03-redis-input.conf"
     owner: root
     group: root
     mode: 0644
   when: logstash_redis_input_enable
   notify: restart logstash
 
-- name: Create Logstash configuration file for local syslog.
+- name: Redis input configuration absent if disabled.
+  file:
+    path: "{{ logstash_config_dir }}/conf.d/03-redis-input.conf"
+    state: absent
+  when: not logstash_redis_input_enable
+  notify: restart logstash
+
+
+- name: Elasticsearch output configuration
   template:
-    src: 02-local-syslog-input.conf.j2
-    dest: /etc/logstash/conf.d/02-local-syslog-input.conf
+    src: "outputs/30-elasticsearch-output.conf.j2"
+    dest: "{{ logstash_config_dir }}/conf.d/30-elasticsearch-output.conf"
     owner: root
     group: root
     mode: 0644
-  when: logstash_monitor_local_syslog
   notify: restart logstash
 
-- name: Ensure configuration for local syslog is absent if disabled.
-  file:
-    path: /etc/logstash/conf.d/02-local-syslog-input.conf
-    state: absent
-  when: not logstash_monitor_local_syslog
+
+- name: Create Logstash filters.
+  template:
+    src: "{{ item }}"
+    dest: "{{ logstash_config_dir }}/conf.d/{{ item|basename }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_fileglob:
+    - templates/filters/*.conf
   notify: restart logstash
+
+
+
+

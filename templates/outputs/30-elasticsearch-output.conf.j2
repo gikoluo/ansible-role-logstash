@@ -1,3 +1,4 @@
+#It is important to exclude dedicated master nodes for hosts settings
 output {
   elasticsearch {
     hosts => {{ logstash_elasticsearch_hosts | to_json }}
@@ -5,3 +6,4 @@ output {
     document_type => "%{[@metadata][type]}"
   }
 }
+
