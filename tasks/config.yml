@@ -24,6 +24,16 @@
     - files/filters/*.conf
   notify: restart logstash
 
+- name: Create Logstash configuration file for Redis.
+  template:
+    src: 03-redis-input.conf.j2
+    dest: /etc/logstash/conf.d/03-redis-input.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: logstash_redis_input_enable
+  notify: restart logstash
+
 - name: Create Logstash configuration file for local syslog.
   template:
     src: 02-local-syslog-input.conf.j2
