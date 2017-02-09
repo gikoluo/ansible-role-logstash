@@ -1,0 +1,16 @@
+input {
+  {% for item in logstash_redis_input_hosts %}
+  redis {
+    host => "{{ item.host }}"
+    port => "{{ item.port|default(6379) }}"
+    data_type => "{{ item.data_type|default('list') }}"
+    key => "{{ item.key|default('filebeat') }}"
+{% if logstash_ssl_certificate_file and logstash_ssl_key_file %}
+    ssl => true
+    ssl_certificate => "{{ logstash_ssl_dir }}/{{ logstash_ssl_certificate_file | basename }}"
+    ssl_key => "{{ logstash_ssl_dir }}/{{ logstash_ssl_key_file | basename }}"
+    ssl_verify_mode => "force_peer"
+{% endif %}
+  }
+  {% endfor %}
+}
