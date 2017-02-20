@@ -8,10 +8,10 @@ logstash_elasticsearch_hosts:
 logstash_beat_input_enable: true
 
 logstash_redis_input_enable: false
-logstash_redis_input_hosts:
-  - host: 127.0.0.1
-    data_type: "list"
-    key: "filebeat"
+logstash_redis_input_hosts: []
+# - host: 127.0.0.1
+#   data_type: "list"
+#   key: "filebeat"
 
 logstash_local_syslog_input_enable: false
 
